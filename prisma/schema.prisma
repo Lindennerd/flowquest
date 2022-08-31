@@ -1,0 +1,189 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator trpc {
+  provider       = "prisma-trpc-generator"
+  withMiddleware = true
+  withShield     = false
+  contextPath    = "../../../../src/server/router/context"
+}
+
+model Example {
+  id String @id @default(cuid())
+}
+
+// Necessary for Next auth
+model Account {
+  id                String  @id @default(cuid())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? //@db.Text
+  access_token      String? //@db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? //@db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                 Int                  @id @default(autoincrement())
+  name               String?
+  email              String?              @unique
+  emailVerified      DateTime?
+  image              String?
+  accounts           Account[]
+  sessions           Session[]
+  roles              Role[]
+  Team               Team?                @relation(fields: [teamId], references: [id])
+  teamId             Int?
+  FormUpdate         FormUpdate[]
+  FormResponseUpdate FormResponseUpdate[]
+  AnswerComment      AnswerComment[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum Role {
+  ADMIN
+  OWNER
+  REVIEWER
+  APPROVER
+  USER
+}
+
+model Team {
+  id    Int    @id @default(autoincrement())
+  users User[]
+  forms Form[]
+}
+
+model Form {
+  id            Int             @id @default(autoincrement())
+  name          String
+  createdAt     DateTime        @default(now())
+  minimalRate   Int
+  sections      Section[]
+  Team          Team?           @relation(fields: [teamId], references: [id])
+  teamId        Int?
+  FormUpdate    FormUpdate[]
+  FormResponse  FormResponse[]
+  Answer        Answer[]
+  AnswerComment AnswerComment[]
+}
+
+model FormUpdate {
+  id        Int      @id @default(autoincrement())
+  form      Form     @relation(fields: [formId], references: [id])
+  updatedAt DateTime @default(now())
+  updatedBy User     @relation(fields: [userId], references: [id])
+  comment   String?
+  formId    Int
+  userId    Int
+}
+
+model Section {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  createdAt   DateTime   @default(now())
+  questions   Question[]
+  Form        Form?      @relation(fields: [formId], references: [id])
+  formId      Int?
+}
+
+model Question {
+  id              Int             @id @default(autoincrement())
+  description     String
+  helpMessage     String?
+  type            QuestionType
+  weight          Int
+  possibleAnswers Option[]
+  Section         Section?        @relation(fields: [sectionId], references: [id])
+  sectionId       Int?
+  Answer          Answer[]
+  AnswerComment   AnswerComment[]
+}
+
+enum QuestionType {
+  PLAIN_TEXT
+  MULTIPLE_CHOICE
+  SINGLE_CHOICE
+}
+
+model Option {
+  id         Int       @id @default(autoincrement())
+  value      String
+  Question   Question? @relation(fields: [questionId], references: [id])
+  questionId Int?
+}
+
+model FormResponse {
+  id                 Int                  @id @default(autoincrement())
+  form               Form                 @relation(fields: [formId], references: [id])
+  answers            Answer[]
+  formId             Int
+  FormResponseUpdate FormResponseUpdate[]
+}
+
+model FormResponseUpdate {
+  id             Int          @id @default(autoincrement())
+  user           User         @relation(fields: [userId], references: [id])
+  respondedAt    DateTime     @default(now())
+  response       FormResponse @relation(fields: [formResponseId], references: [id])
+  comment        String?
+  userId         Int
+  formResponseId Int
+}
+
+model Answer {
+  id             Int           @id @default(autoincrement())
+  question       Question      @relation(fields: [questionId], references: [id])
+  form           Form          @relation(fields: [formId], references: [id])
+  rate           Int
+  value          String
+  FormResponse   FormResponse? @relation(fields: [formResponseId], references: [id])
+  formResponseId Int?
+  questionId     Int
+  formId         Int
+}
+
+model AnswerComment {
+  id          Int      @id @default(autoincrement())
+  question    Question @relation(fields: [questionId], references: [id])
+  form        Form     @relation(fields: [formId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+  commentedAt DateTime @default(now())
+  approved    Boolean
+  questionId  Int
+  formId      Int
+  userId      Int
+}
