@@ -2,7 +2,7 @@ import { BiLogInCircle } from "react-icons/bi";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 export function Navbar() {
-  const {data: session, status} = useSession();
+  const { data: session, status } = useSession();
 
   return (
     <>
@@ -11,10 +11,19 @@ export function Navbar() {
           <a className="btn btn-ghost normal-case text-xl">Flow Quest</a>
         </div>
         <div className="navbar-end">
-          <button className="btn btn-ghost mr-2" onClick={e => signOut()}>Register</button>
-
-          {status === "authenticated" && (<div>Bem vindo {session.user?.email}</div>)}
-          {status !== "authenticated" && (<button className="btn btn-ghost" onClick={e => signIn()}>Login</button>)}
+          {status === "authenticated" && (
+            <div className="flex items-center gap-4">
+              <span>({session.user?.email})</span>
+              <button className="btn btn-ghost btn-circle">
+                <BiLogInCircle className="text-2xl" />
+              </button>
+            </div>
+          )}
+          {status !== "authenticated" && (
+            <button className="btn btn-ghost" onClick={(e) => signIn("auth0")}>
+              Login
+            </button>
+          )}
         </div>
       </div>
     </>
