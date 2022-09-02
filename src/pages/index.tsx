@@ -1,15 +1,34 @@
 import type { NextPage } from "next";
-import Head from "next/head";
-import { trpc } from "../utils/trpc";
+import { useSession } from "next-auth/react";
+import ReactLoading from "react-loading";
+import { UserPage } from "../components/UserPage";
 
 const Home: NextPage = () => {
-  return (
-    <>
-      <main>
-        <button className="btn btn-primary">Ola Mundo</button>
-      </main>
-    </>
-  );
+  const { data: session, status } = useSession();
+
+  if (status === "loading") {
+    return (
+      <div className="flex itens-center justify-center">
+        <ReactLoading color="#000" />
+      </div>
+    );
+  }
+
+  if (status === "unauthenticated") {
+    return <div>Landing Page</div>;
+  }
+
+  if (status === "authenticated") {
+    return (
+      <>
+        <main>
+          <UserPage />
+        </main>
+      </>
+    );
+  }
+
+  return <></>;
 };
 
 export default Home;
