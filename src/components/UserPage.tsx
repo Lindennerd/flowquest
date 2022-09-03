@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Team } from "./Team";
+import { Team } from "./Team/Team";
 
 type Tab = {
   name: string;
@@ -29,17 +29,23 @@ export function UserPage() {
 
   return (
     <div className="p-4">
-      <div className="flex items-center justify-center">
-        <div className="tabs">
-          {tabs.map((tab, index) => (
-            <a
-              className={`tab tab-bordered ${tab.active ? "tab-active" : ""}`}
-              key={index}
-              onClick={(e) => activateTab(tab.name)}
-            >
-              {tab.label}
-            </a>
-          ))}
+      <div className="card w-full bg-base-100 shadow-xl mb-6">
+        <div className="card-body p-4">
+          <div className="flex items-center justify-center">
+            <div className="tabs">
+              {tabs.map((tab, index) => (
+                <a
+                  className={`tab tab-bordered ${
+                    tab.active ? "tab-active" : ""
+                  }`}
+                  key={index}
+                  onClick={(e) => activateTab(tab.name)}
+                >
+                  {tab.label}
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 

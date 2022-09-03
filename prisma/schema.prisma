@@ -10,13 +10,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-generator trpc {
-  provider       = "prisma-trpc-generator"
-  withMiddleware = true
-  withShield     = false
-  contextPath    = "../../../../src/server/router/context"
-}
-
 model Example {
   id String @id @default(cuid())
 }

@@ -1,20 +1,14 @@
+import { useErrorContext } from "../context/error.context";
 import { trpc } from "../utils/trpc";
 
 export function useTeams() {
-  return {
-    getTeamMembers(teamId: number) {
-      return trpc.useQuery([
-        "team.findManyTeam",
-        {
-          where: {
-            id: teamId,
-          },
-        },
-      ]);
-    },
+  const { setError } = useErrorContext();
 
+  return {
     getUsersTeam() {
-      return [];
+      return trpc.useQuery(["team.getUsersTeam"], {
+        onError: (error) => setError(error.message),
+      });
     },
   };
 }

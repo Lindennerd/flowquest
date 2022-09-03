@@ -39,4 +39,8 @@ export const createContext = async (
 
 export type Context = trpc.inferAsyncReturnType<typeof createContext>;
 
-export const createRouter = () => trpc.router<Context>();
+export const createRouter = () =>
+  trpc.router<Context>().middleware(({ ctx, next }) => {
+    console.log("inside middleware!");
+    return next();
+  });

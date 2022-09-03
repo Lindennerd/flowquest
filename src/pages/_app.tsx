@@ -8,17 +8,20 @@ import type { AppType } from "next/dist/shared/lib/utils";
 import superjson from "superjson";
 import type { AppRouter } from "../server/router";
 import "../styles/globals.css";
+import { ErrorProvider } from "../context/error.context";
 
 const MyApp: AppType = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    <SessionProvider session={session}>
-      <MainLayout>
-        <Component {...pageProps} />
-      </MainLayout>
-    </SessionProvider>
+    <ErrorProvider>
+      <SessionProvider session={session}>
+        <MainLayout>
+          <Component {...pageProps} />
+        </MainLayout>
+      </SessionProvider>
+    </ErrorProvider>
   );
 };
 
