@@ -49,12 +49,10 @@ model User {
   image              String?
   accounts           Account[]
   sessions           Session[]
-  roles              Role[]
-  Team               Team?                @relation(fields: [teamId], references: [id])
-  teamId             Int?
   FormUpdate         FormUpdate[]
   FormResponseUpdate FormResponseUpdate[]
   AnswerComment      AnswerComment[]
+  TeamUser           TeamUser[]
 }
 
 model VerificationToken {
@@ -73,10 +71,20 @@ enum Role {
   USER
 }
 
+model TeamUser {
+  id     Int    @id @default(autoincrement())
+  user   User   @relation(fields: [userId], references: [id])
+  team   Team   @relation(fields: [teamId], references: [id])
+  role   Role[]
+  userId Int
+  teamId Int
+}
+
 model Team {
-  id    Int    @id @default(autoincrement())
-  users User[]
-  forms Form[]
+  id       Int        @id @default(autoincrement())
+  name     String
+  forms    Form[]
+  TeamUser TeamUser[]
 }
 
 model Form {

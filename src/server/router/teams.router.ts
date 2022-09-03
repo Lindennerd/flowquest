@@ -1,35 +1,61 @@
+import { Role } from "@prisma/client";
+import { z } from "zod";
+import { teamInputSchema } from "./../../schemas/team.schema";
 import { createRouter } from "./context";
 
-export const teamsRouter = createRouter().query("getUsersTeam", {
-  async resolve({ ctx }) {
-    let team = await ctx.prisma.team.findFirst({
-      where: {
-        users: {
-          some: {
-            id: Number(ctx.session?.user?.id),
-          },
-        },
-      },
-      select: {
-        users: true,
-      },
-    });
-
-    if (!team) {
-      team = await ctx.prisma.team.create({
-        data: {
-          users: {
-            connect: {
-              id: Number(ctx.session?.user?.id),
+export const teamsRouter = createRouter()
+  .query("getUsersTeams", {
+    async resolve({ ctx }) {
+      return await ctx.prisma.team.findMany({
+        where: {
+          TeamUser: {
+            some: {
+              user: {
+                id: Number(ctx.session?.user?.id),
+              },
             },
           },
         },
         select: {
-          users: true,
+          id: true,
+          name: true,
+          TeamUser: true,
+          forms: true,
         },
       });
-    }
-
-    return team;
-  },
-});
+    },
+  })
+  .query("findFirst", {
+    input: z.number(),
+    async resolve({ ctx, input }) {
+      return ctx.prisma.team.findFirst({
+        where: { id: input },
+        select: {
+          id: true,
+          name: true,
+          TeamUser: true,
+          forms: true,
+        },
+      });
+    },
+  })
+  .mutation("create", {
+    input: teamInputSchema,
+    async resolve({ ctx, input }) {
+      return await ctx.prisma.team.create({
+        data: {
+          name: input.name,
+          TeamUser: {
+            create: {
+              role: [Role.OWNER],
+              user: {
+                connect: {
+                  id: Number(ctx.session?.user?.id),
+                },
+              },
+            },
+          },
+        },
+      });
+    },
+  });

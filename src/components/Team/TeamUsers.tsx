@@ -10,19 +10,6 @@ export function TeamUsers(props: ITeamUsers) {
   return (
     <>
       <div className="mt-2">
-        {!props.users && (
-          <div className="alert shadow-lg">
-            <div>
-              <BiAlarmExclamation className="text-xl" />
-              Você ainda não possui um time
-            </div>
-            <div className="flex-none">
-              <button className="btn btn-sm btn-primary btn-outline">
-                Criar Time
-              </button>
-            </div>
-          </div>
-        )}
         {props.users && (
           <div className="overflow-x-auto">
             <table className="table w-full">
@@ -52,7 +39,7 @@ export function TeamUsers(props: ITeamUsers) {
                     </td>
                     <td>{user?.name}</td>
                     <td>{user?.email}</td>
-                    <td>{user?.roles}</td>
+                    <td>{[]}</td>
                   </tr>
                 ))}
               </tbody>
