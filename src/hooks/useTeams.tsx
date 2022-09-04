@@ -16,6 +16,12 @@ export function useTeams() {
       });
     },
 
+    getTeam(id: number) {
+      return trpc.useQuery(["team.findFirst", id], {
+        onError: (error) => setError(error.message),
+      });
+    },
+
     async create(team: TeamInputSchema) {
       return await createMutation.mutateAsync(team);
     },

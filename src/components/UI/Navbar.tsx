@@ -1,14 +1,21 @@
 import { BiLogInCircle } from "react-icons/bi";
 import { useSession, signIn, signOut } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export function Navbar() {
   const { data: session, status } = useSession();
+  const router = useRouter();
 
   return (
     <>
       <div className="navbar bg-base-300">
         <div className="flex-1">
-          <a className="btn btn-ghost normal-case text-xl">Flow Quest</a>
+          <a
+            className="btn btn-ghost normal-case text-xl"
+            onClick={(e) => router.push("/")}
+          >
+            Flow Quest
+          </a>
         </div>
         <div className="navbar-end">
           {status === "authenticated" && (

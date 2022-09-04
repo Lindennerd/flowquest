@@ -3,6 +3,25 @@ import { z } from "zod";
 import { teamInputSchema } from "./../../schemas/team.schema";
 import { createRouter } from "./context";
 
+const teamSelect = {
+  id: true,
+  name: true,
+  TeamUser: {
+    select: {
+      role: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+    },
+  },
+  forms: true,
+};
+
 export const teamsRouter = createRouter()
   .query("getUsersTeams", {
     async resolve({ ctx }) {
@@ -16,12 +35,7 @@ export const teamsRouter = createRouter()
             },
           },
         },
-        select: {
-          id: true,
-          name: true,
-          TeamUser: true,
-          forms: true,
-        },
+        select: teamSelect,
       });
     },
   })
@@ -30,12 +44,7 @@ export const teamsRouter = createRouter()
     async resolve({ ctx, input }) {
       return ctx.prisma.team.findFirst({
         where: { id: input },
-        select: {
-          id: true,
-          name: true,
-          TeamUser: true,
-          forms: true,
-        },
+        select: teamSelect,
       });
     },
   })
