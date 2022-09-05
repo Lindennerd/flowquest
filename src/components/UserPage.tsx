@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Team } from "./Team/Team";
+import { Forms } from "./Form/Forms";
 import { Teams } from "./Team/Teams";
 
 type Tab = {
@@ -10,7 +10,7 @@ type Tab = {
 
 export function UserPage() {
   const [tabs, setTabs] = useState<Tab[]>([
-    { name: "team", label: "Team", active: true },
+    { name: "team", label: "Teams", active: true },
     { name: "forms", label: "Forms", active: false },
     { name: "responses", label: "Responses", active: false },
   ]);
@@ -51,7 +51,7 @@ export function UserPage() {
       </div>
 
       {getActiveTab()?.name === "team" && <Teams />}
-      {getActiveTab()?.name === "forms" && <div>Forms</div>}
+      {getActiveTab()?.name === "forms" && <Forms />}
       {getActiveTab()?.name === "responses" && <div>Responses</div>}
     </div>
   );
